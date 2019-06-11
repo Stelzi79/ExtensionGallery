@@ -8,59 +8,59 @@ using Microsoft.AspNet.Mvc;
 
 namespace ExtensionGallery.Controllers
 {
-	public class ApiController : Controller
-	{
-		IHostingEnvironment _env;
-		PackageHelper _helper;
+    public class ApiController : Controller
+    {
+        IHostingEnvironment _env;
+        PackageHelper _helper;
 
-		public ApiController(IHostingEnvironment env)
-		{
-			_env = env;
-			_helper = new PackageHelper(env.WebRootPath);
-		}
+        public ApiController(IHostingEnvironment env)
+        {
+            _env = env;
+            _helper = new PackageHelper(env.WebRootPath);
+        }
 
-		public object Get(string id)
-		{
-			Response.Headers["Cache-Control"] = "no-cache";
+        public object Get(string id)
+        {
+            Response.Headers["Cache-Control"] = "no-cache";
 
-			if (string.IsNullOrWhiteSpace(id))
-			{
-				var packages = _helper.PackageCache.OrderByDescending(p => p.DatePublished);
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                var packages = _helper.PackageCache.OrderByDescending(p => p.DatePublished);
 
-				if (this.IsConditionalGet(packages))
-				{
-					return Enumerable.Empty<Package>();
-				}
+                if (this.IsConditionalGet(packages))
+                {
+                    return Enumerable.Empty<Package>();
+                }
 
-				return packages;
-			}
+                return packages;
+            }
 
-			var package = _helper.GetPackage(id);
+            var package = _helper.GetPackage(id);
 
-			if (this.IsConditionalGet(package))
-			{
-				return new EmptyResult();
-			}
+            if (this.IsConditionalGet(package))
+            {
+                return new EmptyResult();
+            }
 
-			return package;
-		}
+            return package;
+        }
 
-		[HttpPost]
-		public async Task<IActionResult> Upload([FromQuery]string repo, string issuetracker)
-		{
-			try
-			{
-				Stream bodyStream = Context.Request.Body;
-				Package package = await _helper.ProcessVsix(bodyStream, repo, issuetracker);
+        [HttpPost]
+        public async Task<IActionResult> Upload([FromQuery]string repo, string issuetracker)
+        {
+            try
+            {
+                Stream bodyStream = Context.Request.Body;
+                Package package = await _helper.ProcessVsix(bodyStream, repo, issuetracker);
 
-				return Json(package);
-			}
-			catch (Exception ex)
-			{
-				Response.StatusCode = 500;
-				Response.Headers["x-error"] = ex.Message;
-				return Content(ex.Message);
-			}
-		}
-	}
+                return Json(package);
+            }
+            catch (Exception ex)
+            {
+                Response.StatusCode = 500;
+                Response.Headers["x-error"] = ex.Message;
+                return Content(ex.Message);
+            }
+        }
+    }
 }

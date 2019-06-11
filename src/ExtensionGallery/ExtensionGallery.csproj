@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <AssemblyName>ExtensionGallery</AssemblyName>
+        <PackageId>ExtensionGallery</PackageId>
+    </PropertyGroup>
+
+    <ItemGroup>
+
+    </ItemGroup>
+
+</Project>
